@@ -4,6 +4,7 @@ import { createInertiaApp } from "@inertiajs/vue3";
 import PrimeVue from "primevue/config";
 import Aura from "@primevue/themes/aura";
 import "primeicons/primeicons.css";
+import { definePreset } from "@primevue/themes";
 import Ripple from "primevue/ripple";
 import StyleClass from "primevue/styleclass";
 import Tooltip from "primevue/tooltip";

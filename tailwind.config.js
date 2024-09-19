@@ -1,3 +1,4 @@
+import defaultTheme from "tailwindcss/defaultTheme";
 import primeUi from "tailwindcss-primeui";
 
 export default {
@@ -7,7 +8,21 @@ export default {
         "./resources/**/*.vue",
     ],
     theme: {
-        extend: {},
+        container: {
+            center: true,
+            padding: {
+                DEFAULT: "1rem",
+                sm: "2rem",
+                lg: "4rem",
+                xl: "5rem",
+                "2xl": "6rem",
+            },
+        },
+        extend: {
+            fontFamily: {
+                roboto: ["Roboto", ...defaultTheme.fontFamily.sans],
+            },
+        },
     },
     plugins: [primeUi],
 };
