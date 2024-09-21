@@ -29,93 +29,69 @@ const form = useForm({
 });
 
 const submit = () => {
-    loading.value = true;
     page.props.errors.message = null;
     form.clearErrors();
-    form.post("/admin/login", form, {
-        onSuccess: () => {
-            loading.value = false;
-        },
-    });
+    form.post("/admin/login");
 };
-
-onMounted(() => {
-    loading.value = false;
-});
 </script>
 
 <template>
-    <template v-if="loading && !page.props.errors.message && !form.errors">
-        <div
-            class="fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-white"
-        >
-            <ProgressSpinner
-                style="width: 50px; height: 50px"
-                strokeWidth="8"
-                fill="transparent"
-                animationDuration=".5s"
-                aria-label="Custom ProgressSpinner"
+    <template v-if="page.props.errors.message">
+        <Message severity="error" class="mb-3">
+            {{ page.props.errors.message }}
+        </Message>
+    </template>
+
+    <form @submit.prevent="submit" class="flex flex-col gap-y-3">
+        <div class="flex flex-col gap-y-2">
+            <Label for="username">Username</Label>
+            <InputText
+                v-model="form.name"
+                placeholder="John Doe"
+                id="username"
             />
+            <template v-if="form.errors.name">
+                <Message severity="error">
+                    {{ form.errors.name }}
+                </Message>
+            </template>
         </div>
-    </template>
 
-    <template v-else>
-        <template v-if="page.props.errors.message">
-            <Message severity="error" class="mb-3">
-                {{ page.props.errors.message }}
-            </Message>
-        </template>
-        <form @submit.prevent="submit" class="flex flex-col gap-y-3">
-            <div class="flex flex-col gap-y-2">
-                <Label for="username">Username</Label>
-                <InputText
-                    v-model="form.name"
-                    placeholder="John Doe"
-                    id="username"
-                />
-                <template v-if="form.errors.name">
-                    <Message severity="error">
-                        {{ form.errors.name }}
-                    </Message>
-                </template>
-            </div>
+        <div class="flex flex-col gap-y-2">
+            <Label for="password">Password</Label>
+            <Password
+                :inputStyle="{ width: '100%' }"
+                inputId="password"
+                v-model="form.password"
+                placeholder="********"
+                :feedback="false"
+                toggleMask
+            />
+            <template v-if="form.errors.password">
+                <Message severity="error">
+                    {{ form.errors.password }}
+                </Message>
+            </template>
+        </div>
 
-            <div class="flex flex-col gap-y-2">
-                <Label for="password">Password</Label>
-                <Password
-                    :inputStyle="{ width: '100%' }"
-                    inputId="password"
-                    v-model="form.password"
-                    placeholder="********"
-                    :feedback="false"
-                    toggleMask
-                />
-                <template v-if="form.errors.password">
-                    <Message severity="error">
-                        {{ form.errors.password }}
-                    </Message>
-                </template>
-            </div>
+        <div class="flex items-center gap-x-2">
+            <Checkbox
+                inputId="remember"
+                :binary="true"
+                v-model="form.remember"
+            />
+            <Label for="remember">Remember Me</Label>
+        </div>
 
-            <div class="flex items-center gap-x-2">
-                <Checkbox
-                    inputId="remember"
-                    :binary="true"
-                    v-model="form.remember"
-                />
-                <Label for="remember">Remember Me</Label>
-            </div>
+        <Button label="Sign in" type="submit" />
+    </form>
 
-            <Button label="Sign in" type="submit" />
-        </form>
-
-        <p class="text-center mt-10 text-sm text-gray-400">
-            Are you a student?
-            <Link
-                href="/login"
-                class="text-blue-500 hover:text-blue-400 font-medium"
-                >Sign in</Link
-            >
-        </p>
-    </template>
+    <p class="text-center mt-10 text-sm text-gray-400">
+        Are you a student?
+        <Link
+            href="/login"
+            class="text-blue-500 hover:text-blue-400 font-medium"
+            >Sign in</Link
+        >
+    </p>
 </template>

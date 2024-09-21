@@ -14,7 +14,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            return redirect()->intended($url);
+            return redirect($url);
         }
 
         return back()->withErrors(['message' => 'Your credentials do not match our records!']);
@@ -27,7 +27,7 @@ class LoginController extends Controller
             'password' => ['required', 'string', 'min:8']
         ]);
 
-        return $this->authenticate($request, $credentials, '/');
+        return $this->authenticate($request, $credentials, '/dashboard');
     }
 
     public function authAdmin(Request $request)
@@ -37,6 +37,6 @@ class LoginController extends Controller
             'password' => ['required', 'string', 'min:8']
         ]);
 
-        return $this->authenticate($request, $credentials, '/admin');
+        return $this->authenticate($request, $credentials, '/admin/dashboard');
     }
 }

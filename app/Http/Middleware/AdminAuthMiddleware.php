@@ -20,6 +20,7 @@ class AdminAuthMiddleware
             return $next($request);
         }
 
-        return redirect('/admin/login');
+        return redirect('/admin/login')
+            ->withErrors(['message' => 'You dont have permission to access this page!']);
     }
 }
