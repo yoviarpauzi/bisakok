@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Classes>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Classroom>
  */
-class ClassesFactory extends Factory
+class ClassroomFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,7 @@ class ClassesFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->unique()->randomElement(['VII', 'VIII', 'IX']),
+            'name' => fake()->unique()->randomElement(['VII', 'VIII', 'IX'])
         ];
     }
 }

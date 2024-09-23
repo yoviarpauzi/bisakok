@@ -1,10 +1,8 @@
 <script setup>
 import { ref } from "vue";
 import Header from "../organisms/Header.vue";
-import Sidebar from "../organisms/Sidebar.vue";
 import SidebarBottom from "../organisms/SidebarBottom.vue";
 import SidebarItem from "../atoms/SidebarItem.vue";
-import Divider from "primevue/divider";
 
 const visible = ref(false);
 </script>
@@ -73,10 +71,10 @@ const visible = ref(false);
                 </h6>
             </Header>
 
-            <div class="container">
+            <div class="w-screen container">
                 <div
                     class="mt-20 mb-4 md:mb-0"
-                    :class="visible ? ' md:ms-64' : 'md:ms-14'"
+                    :class="visible ? 'md:ms-64 lg:ms-52' : 'md:ms-14 lg:ms-0'"
                 >
                     <slot />
                 </div>

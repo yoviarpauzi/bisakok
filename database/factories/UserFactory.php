@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Classes;
+use App\Models\Classroom;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -25,7 +26,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'classes_id' => Classes::factory(),
+            'classrooms_id' => Classroom::factory(),
             'nisn' => fake()->unique()->numerify('##########'),
             'name' => fake()->name(),
             'role' => 'user',

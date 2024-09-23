@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Classes extends Model
+class Classroom extends Model
 {
     use HasFactory;
 
@@ -14,6 +14,6 @@ class Classes extends Model
 
     public function students(): HasMany
     {
-        return $this->hasMany(User::class, 'classes_id', 'id');
+        return $this->hasMany(User::class, 'classrooms_id', 'id');
     }
 }

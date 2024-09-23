@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'classes_id',
+        'classrooms_id',
         'nisn',
         'name',
         'role',
@@ -47,8 +47,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function classes(): BelongsTo
+    public function classroom(): BelongsTo
     {
-        return $this->belongsTo(Classes::class, 'classes_id', 'id');
+        return $this->belongsTo(Classroom::class, 'classrooms_id', 'id');
     }
 }

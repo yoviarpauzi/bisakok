@@ -16,7 +16,7 @@ onMounted(async () => {
 
 <template>
     <header
-        class="fixed top-0 w-screen bg-white shadow-md border border-gray-100 z-0 py-3"
+        class="fixed top-0 w-screen bg-white shadow-md border border-gray-100 z-10 py-3"
     >
         <div class="container">
             <div

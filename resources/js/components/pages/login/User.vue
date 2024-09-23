@@ -9,12 +9,6 @@ export default {
 <script setup>
 import { ref } from "vue";
 import { useForm, usePage } from "@inertiajs/vue3";
-import Message from "primevue/message";
-import Label from "../../atoms/Label.vue";
-import InputMask from "primevue/inputmask";
-import Password from "primevue/password";
-import Checkbox from "primevue/checkbox";
-import Button from "primevue/button";
 import { Link } from "@inertiajs/vue3";
 
 const loading = ref(false);

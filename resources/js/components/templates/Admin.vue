@@ -3,7 +3,6 @@ import { ref } from "vue";
 import Sidebar from "../organisms/Sidebar.vue";
 import Header from "../organisms/Header.vue";
 import SidebarItem from "../atoms/SidebarItem.vue";
-import Divider from "primevue/divider";
 
 const visible = ref(false);
 </script>
@@ -28,15 +27,15 @@ const visible = ref(false);
 
             <SidebarItem
                 v-model="visible"
-                href="/admin/classes"
-                tooltip="Classes"
+                href="/admin/classroom"
+                tooltip="Classroom"
                 :class="{
                     'bg-blue-500 text-white rounded-lg':
-                        $page.url === '/admin/classes',
+                        $page.url === '/admin/classroom',
                 }"
             >
                 <i class="pi pi-graduation-cap"></i>
-                <span v-show="visible">Classes</span>
+                <span v-show="visible">Classroom</span>
             </SidebarItem>
 
             <SidebarItem
@@ -92,13 +91,31 @@ const visible = ref(false);
                 <i class="pi pi-clock"></i>
                 <span v-show="visible">Test Session</span>
             </SidebarItem>
+
+            <Divider />
+
+            <SidebarItem
+                v-model="visible"
+                tooltip="Score Reports"
+                href="/admin/report"
+                :class="{
+                    'bg-blue-500 text-white rounded-lg':
+                        $page.url === '/admin/scorereports',
+                }"
+            >
+                <i class="pi pi-chart-bar"></i>
+                <span v-show="visible">Score Report</span>
+            </SidebarItem>
         </Sidebar>
 
         <div>
             <Header></Header>
 
-            <div class="container">
-                <div class="mt-20 ms-14">
+            <div class="w-screen container">
+                <div
+                    class="mt-24 ms-20 lg:ms-0"
+                    :class="visible ? 'md:ms-66 lg:ms-56' : 'md:ms-16 lg:ms-4'"
+                >
                     <slot />
                 </div>
             </div>

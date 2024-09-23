@@ -9,13 +9,6 @@ export default {
 <script setup>
 import { ref, onMounted } from "vue";
 import { useForm, usePage } from "@inertiajs/vue3";
-import ProgressSpinner from "primevue/progressspinner";
-import Message from "primevue/message";
-import Label from "../../atoms/Label.vue";
-import InputText from "primevue/inputtext";
-import Password from "primevue/password";
-import Checkbox from "primevue/checkbox";
-import Button from "primevue/button";
 import { Link } from "@inertiajs/vue3";
 
 const loading = ref(true);

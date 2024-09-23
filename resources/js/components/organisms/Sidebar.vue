@@ -1,12 +1,10 @@
 <script setup>
-import Button from "primevue/button";
-
 const visible = defineModel();
 </script>
 
 <template>
     <div
-        class="fixed top-0 left-0 h-screen bg-white border border-gray-100 shadow-md z-10"
+        class="fixed top-0 left-0 h-screen bg-white border border-gray-100 shadow-md z-20"
         :class="visible ? 'w-[60%] md:w-[35%] lg:w-[18%]' : ''"
     >
         <div class="p-3 md:p-4">

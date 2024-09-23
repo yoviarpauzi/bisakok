@@ -8,6 +8,7 @@ import { definePreset } from "@primevue/themes";
 import Ripple from "primevue/ripple";
 import StyleClass from "primevue/styleclass";
 import Tooltip from "primevue/tooltip";
+import ToastService from "primevue/toastservice";
 
 const myPreset = definePreset(Aura, {
     semantic: {
@@ -92,6 +93,7 @@ createInertiaApp({
                     },
                 },
             })
+            .use(ToastService)
             .directive("ripple", Ripple)
             .directive("styleclass", StyleClass)
             .directive("tooltip", Tooltip)
