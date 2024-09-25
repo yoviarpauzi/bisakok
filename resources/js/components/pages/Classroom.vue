@@ -182,11 +182,9 @@ const exportCSV = () => {
 
     <div class="card text-blue-950">
         <ToolbarTable
-            v-model:selectedClassrooms="selectedClassrooms"
-            v-model:addClassroomDialog="addClassroomDialog"
-            v-model:deleteSelectedClassroomDialog="
-                deleteSelectedClassroomDialog
-            "
+            v-model:selectedItems="selectedClassrooms"
+            v-model:addItemDialog="addClassroomDialog"
+            v-model:deleteSelectedItemDialog="deleteSelectedClassroomDialog"
             :exportCSV="exportCSV"
         ></ToolbarTable>
 

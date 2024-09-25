@@ -19,9 +19,5 @@ class DatabaseSeeder extends Seeder
         AdminFactory::new()->create([
             'name' => 'admin'
         ]);
-
-        User::factory()->create([
-            'name' => 'Test User',
-        ]);
     }
 }

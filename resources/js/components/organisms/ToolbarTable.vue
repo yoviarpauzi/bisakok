@@ -5,11 +5,9 @@ const props = defineProps({
     exportCSV: Function,
 });
 
-const selectedClassrooms = defineModel("selectedClassrooms");
-const addClassroomDialog = defineModel("addClassroomDialog");
-const deleteSelectedClassroomDialog = defineModel(
-    "deleteSelectedClassroomDialog"
-);
+const selectedItems = defineModel("selectedItems");
+const addItemDialog = defineModel("addItemDialog");
+const deleteSelectedItemDialog = defineModel("deleteSelectedItemDialog");
 </script>
 
 <template>
@@ -20,14 +18,14 @@ const deleteSelectedClassroomDialog = defineModel(
                 icon="pi pi-plus"
                 severity="success"
                 class="mr-2"
-                @click="addClassroomDialog = true"
+                @click="addItemDialog = true"
             />
             <Button
                 label="Delete"
                 icon="pi pi-trash"
                 severity="danger"
-                :disabled="!selectedClassrooms || !selectedClassrooms.length"
-                @click="deleteSelectedClassroomDialog = true"
+                :disabled="!selectedItems || !selectedItems.length"
+                @click="deleteSelectedItemDialog = true"
             />
         </template>
 
