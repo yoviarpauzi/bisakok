@@ -53,6 +53,19 @@ const visible = ref(false);
 
             <SidebarItem
                 v-model="visible"
+                href="/admin/admins"
+                tooltip="Admins"
+                :class="{
+                    'bg-blue-500 text-white rounded-lg':
+                        $page.url === '/admin/admins',
+                }"
+            >
+                <i class="pi pi-users"></i>
+                <span v-show="visible">Admins</span>
+            </SidebarItem>
+
+            <SidebarItem
+                v-model="visible"
                 href="/admin/students"
                 tooltip="Students"
                 :class="{

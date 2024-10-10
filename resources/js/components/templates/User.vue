@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import Header from "../organisms/Header.vue";
+import Sidebar from '../organisms/Sidebar.vue';
 import SidebarBottom from "../organisms/SidebarBottom.vue";
 import SidebarItem from "../atoms/SidebarItem.vue";
 

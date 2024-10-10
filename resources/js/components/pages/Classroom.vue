@@ -1,6 +1,5 @@
 <script>
 import Layout from "../templates/Admin.vue";
-import ToolbarTable from "../organisms/ToolbarTable.vue";
 
 export default {
     layout: Layout,
@@ -9,18 +8,19 @@ export default {
 
 <script setup>
 import axios from "axios";
-import { useForm, usePage } from "@inertiajs/vue3";
+import { useForm } from "@inertiajs/vue3";
 import { useToast } from "primevue/usetoast";
 import { FilterMatchMode } from "@primevue/core/api";
-import { onMounted, ref } from "vue";
-
-const page = usePage();
+import ToolbarTable from "../molecules/ToolbarTable.vue";
+import { onMounted, ref, watch } from "vue";
+import DialogForm from "../molecules/DialogForm.vue";
+import DialogConfirmation from "../molecules/DialogConfirmation.vue";
 
 const toast = useToast();
 const dt = ref();
-const loading = ref(false);
+const loading = ref(true);
 const classroom = ref({});
-const classrooms = ref([]);
+const classrooms = ref([{}, {}, {}, {}, {}]);
 const selectedClassrooms = ref([]);
 const addClassroomDialog = ref(false);
 const editClassroomDialog = ref(false);
@@ -30,9 +30,43 @@ const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
-onMounted(async () => {
-    const response = await axios.get("/admin/classroom/shows");
+const getData = async () => {
+    const response = await axios.get("/admin/classroom/shows").finally(() => {
+        loading.value = false;
+    });
     classrooms.value = response.data;
+};
+
+const sendData = (form, url, dialog, message) => {
+    loading.value = true;
+    form.clearErrors();
+    form.post(url, {
+        onSuccess: async () => {
+            dialog.value = false;
+            await getData();
+            form.reset();
+            toast.add({
+                severity: "success",
+                summary: "Success",
+                detail: message,
+                life: 3000,
+            });
+        },
+
+        onError: () => {
+            loading.value = false;
+            toast.add({
+                severity: "error",
+                summary: "Error",
+                detail: "Something went wrong!",
+                life: 3000,
+            });
+        },
+    });
+};
+
+onMounted(async () => {
+    await getData();
 });
 
 const form = useForm({
@@ -48,124 +82,60 @@ const deleteForm = useForm({
     ids: [],
 });
 
+watch(addClassroomDialog, (value) => {
+    if (value === true) {
+        form.reset();
+        form.clearErrors();
+    }
+});
+
 const addClassroom = async () => {
-    loading.value = false;
-    form.clearErrors();
-    form.post("/admin/classroom/store", {
-        onSuccess: () => {
-            loading.value = false;
-            classroom.value = { name: form.name, students_count: 0 };
-            classrooms.value.push(classroom.value);
-            addClassroomDialog.value = false;
-            form.reset();
-            toast.add({
-                severity: "success",
-                summary: "Success",
-                detail: "Classroom created successfully",
-                life: 3000,
-            });
-        },
-        onError: () => {
-            loading.value = false;
-        },
-    });
+    sendData(
+        form,
+        "/admin/classroom/store",
+        addClassroomDialog,
+        "Success add classroom",
+    );
 };
 
 const toggleEditDialog = (data) => {
-    loading.value = true;
-    classroom.value = data;
-    updateForm.id = classroom.value.id;
-    updateForm.name = classroom.value.name;
+    updateForm.id = data.id;
+    updateForm.name = data.name;
     editClassroomDialog.value = true;
 };
 
 const editClassroom = async () => {
-    updateForm.post("/admin/classroom/edit", {
-        onSuccess: () => {
-            loading.value = false;
-            classrooms.value[findIndexById(classroom.value.id)].name =
-                classroom.value.name;
-            classroom.value = {};
-            editClassroomDialog.value = false;
-            updateForm.reset();
-            toast.add({
-                severity: "success",
-                summary: "Successful",
-                detail: "Classroom Updated",
-                life: 3000,
-            });
-        },
-        onError: () => {
-            loading.value = false;
-        },
-    });
+    sendData(
+        updateForm,
+        "/admin/classroom/edit",
+        editClassroomDialog,
+        "Success update classroom",
+    );
 };
 
 const deleteSelectedClassroom = async () => {
-    loading.value = true;
     deleteForm.ids = selectedClassrooms.value.map((item) => item.id);
-    deleteForm.post("/admin/classroom/delete", {
-        onSuccess: () => {
-            loading.value = false;
-            classrooms.value = classrooms.value.filter(
-                (val) => !selectedClassrooms.value.includes(val)
-            );
-            deleteSelectedClassroomDialog.value = false;
-            selectedClassrooms.value = null;
-            toast.add({
-                severity: "success",
-                summary: "Successful",
-                detail: "Classroom Deleted",
-                life: 3000,
-            });
-        },
-
-        onError: () => {
-            loading.value = false;
-        },
-    });
+    sendData(
+        deleteForm,
+        "/admin/classroom/delete",
+        deleteSelectedClassroomDialog,
+        "Success delete selected classroom",
+    );
 };
 
 const toggleDeleteDialog = (data) => {
-    loading.value = true;
     classroom.value = data;
     deleteForm.ids.push(classroom.value.id);
     deleteClassroomDialog.value = true;
 };
 
 const deleteClassroom = async () => {
-    deleteForm.post("/admin/classroom/delete", {
-        onSuccess: () => {
-            classrooms.value = classrooms.value.filter(
-                (val) => val.id !== classroom.value.id
-            );
-            deleteClassroomDialog.value = false;
-            classroom.value = {};
-            loading.value = false;
-            deleteForm.reset();
-            toast.add({
-                severity: "success",
-                summary: "Successful",
-                detail: "Classroom Deleted",
-                life: 3000,
-            });
-        },
-        onError: () => {
-            loading.value = false;
-        },
-    });
-};
-
-const findIndexById = (id) => {
-    let index = -1;
-    for (let i = 0; i < classrooms.value.length; i++) {
-        if (classrooms.value[i].id === id) {
-            index = i;
-            break;
-        }
-    }
-
-    return index;
+    sendData(
+        deleteForm,
+        "/admin/classroom/delete",
+        deleteClassroomDialog,
+        "Successs delete classroom",
+    );
 };
 
 const exportCSV = () => {
@@ -217,24 +187,40 @@ const exportCSV = () => {
                 selectionMode="multiple"
                 style="width: 3rem"
                 :exportable="false"
-            ></Column>
+            >
+                <template v-if="loading" #body>
+                    <Skeleton></Skeleton>
+                </template>
+            </Column>
 
             <Column
                 field="name"
                 header="Name"
                 sortable
                 style="min-width: 12rem"
-            ></Column>
+            >
+                <template v-if="loading" #body>
+                    <Skeleton></Skeleton>
+                </template>
+            </Column>
 
             <Column
                 field="students_count"
                 header="Number of students"
                 sortable
                 style="min-width: 12rem"
-            ></Column>
+            >
+                <template v-if="loading" #body>
+                    <Skeleton></Skeleton>
+                </template>
+            </Column>
 
             <Column :exportable="false" style="min-width: 12rem">
-                <template #body="slotProps">
+                <template v-if="loading" #body>
+                    <Skeleton></Skeleton>
+                </template>
+
+                <template v-else #body="slotProps">
                     <Button
                         icon="pi pi-pencil"
                         outlined
@@ -255,11 +241,10 @@ const exportCSV = () => {
     </div>
 
     <!-- Add Classroom Dialog -->
-    <Dialog
-        v-model:visible="addClassroomDialog"
-        :style="{ width: '450px' }"
+    <DialogForm
+        v-model="addClassroomDialog"
         header="Add Classroom"
-        :modal="true"
+        :confirm="addClassroom"
     >
         <div class="flex flex-col gap-y-2">
             <label for="name">Name</label>
@@ -270,24 +255,13 @@ const exportCSV = () => {
                 </Message>
             </template>
         </div>
-
-        <template #footer>
-            <Button
-                label="Cancel"
-                icon="pi pi-times"
-                text
-                @click="addClassroomDialog = false"
-            />
-            <Button label="Save" icon="pi pi-check" @click="addClassroom" />
-        </template>
-    </Dialog>
+    </DialogForm>
 
     <!-- Edit Classroom Dialog  -->
-    <Dialog
-        v-model:visible="editClassroomDialog"
-        :style="{ width: '450px' }"
+    <DialogForm
+        v-model="editClassroomDialog"
         header="Update Classroom"
-        :modal="true"
+        :confirm="editClassroom"
     >
         <div class="flex flex-col gap-y-2">
             <label for="name">Name</label>
@@ -298,52 +272,23 @@ const exportCSV = () => {
                 </Message>
             </template>
         </div>
-
-        <template #footer>
-            <Button
-                label="Cancel"
-                icon="pi pi-times"
-                text
-                @click="addClassroomDialog = false"
-            />
-            <Button label="Save" icon="pi pi-check" @click="editClassroom" />
-        </template>
-    </Dialog>
+    </DialogForm>
 
     <!-- Delete Selected Classroom Dialog -->
-    <Dialog
-        v-model:visible="deleteSelectedClassroomDialog"
-        :style="{ width: '450px' }"
-        header="Confirm"
-        :modal="true"
+    <DialogConfirmation
+        v-model="deleteSelectedClassroomDialog"
+        :confirm="deleteSelectedClassroom"
     >
         <div class="flex items-center gap-4">
             <i class="pi pi-exclamation-triangle !text-3xl" />
             <span>Are you sure you want to delete the selected products?</span>
         </div>
-
-        <template #footer>
-            <Button
-                label="No"
-                icon="pi pi-times"
-                text
-                @click="deleteClassroomDialog = false"
-            />
-            <Button
-                label="Yes"
-                icon="pi pi-check"
-                text
-                @click="deleteSelectedClassroom"
-            />
-        </template>
-    </Dialog>
+    </DialogConfirmation>
 
     <!-- Delete classroom Dialog -->
-    <Dialog
-        v-model:visible="deleteClassroomDialog"
-        :style="{ width: '450px' }"
-        header="Confirm"
-        :modal="true"
+    <DialogConfirmation
+        v-model="deleteClassroomDialog"
+        :confirm="deleteClassroom"
     >
         <div class="flex items-center gap-4">
             <i class="pi pi-exclamation-triangle !text-3xl" />
@@ -352,20 +297,5 @@ const exportCSV = () => {
                 {{ classroom.name }}?</span
             >
         </div>
-
-        <template #footer>
-            <Button
-                label="No"
-                icon="pi pi-times"
-                text
-                @click="deleteClassroomDialog = false"
-            />
-            <Button
-                label="Yes"
-                icon="pi pi-check"
-                text
-                @click="deleteClassroom"
-            />
-        </template>
-    </Dialog>
+    </DialogConfirmation>
 </template>
