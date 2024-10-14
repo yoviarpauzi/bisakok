@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LoginController;
@@ -39,6 +40,12 @@ Route::prefix('admin')->group(function () {
         Route::post('/courses/store', [CourseController::class, 'store']);
         Route::post('/courses/edit', [CourseController::class, 'edit']);
         Route::post('/courses/delete', [CourseController::class, 'delete']);
+
+        Route::inertia('/admins', 'pages/Admin')->name('admin');
+        Route::get('/admins/shows', [AdminController::class, 'shows']);
+        Route::post('/admins/store', [AdminController::class, 'store']);
+        Route::post('/admins/edit', [AdminController::class, 'edit']);
+        Route::post('/admins/delete', [AdminController::class, 'delete']);
     });
 });
 

@@ -94,7 +94,7 @@ const addClassroom = async () => {
         form,
         "/admin/classroom/store",
         addClassroomDialog,
-        "Success add classroom",
+        "Success add classroom"
     );
 };
 
@@ -109,7 +109,7 @@ const editClassroom = async () => {
         updateForm,
         "/admin/classroom/edit",
         editClassroomDialog,
-        "Success update classroom",
+        "Success update classroom"
     );
 };
 
@@ -119,7 +119,7 @@ const deleteSelectedClassroom = async () => {
         deleteForm,
         "/admin/classroom/delete",
         deleteSelectedClassroomDialog,
-        "Success delete selected classroom",
+        "Success delete selected classroom"
     );
 };
 
@@ -134,7 +134,7 @@ const deleteClassroom = async () => {
         deleteForm,
         "/admin/classroom/delete",
         deleteClassroomDialog,
-        "Successs delete classroom",
+        "Successs delete classroom"
     );
 };
 
@@ -248,7 +248,7 @@ const exportCSV = () => {
     >
         <div class="flex flex-col gap-y-2">
             <label for="name">Name</label>
-            <InputText v-model="form.name" />
+            <InputText v-model="form.name" autofocus="true" />
             <template v-if="form.errors.name">
                 <Message severity="error">
                     {{ form.errors.name }}
@@ -265,7 +265,7 @@ const exportCSV = () => {
     >
         <div class="flex flex-col gap-y-2">
             <label for="name">Name</label>
-            <InputText v-model="updateForm.name" />
+            <InputText v-model="updateForm.name" autofocus="true" />
             <template v-if="updateForm.errors.name">
                 <Message severity="error">
                     {{ updateForm.errors.name }}
