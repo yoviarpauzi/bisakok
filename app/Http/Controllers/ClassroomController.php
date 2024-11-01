@@ -7,11 +7,32 @@ use Illuminate\Http\Request;
 
 class ClassroomController extends Controller
 {
-    public function shows()
+    /**
+     * Get all classrooms with student count.
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function index()
     {
         return Classroom::withCount('students')->get();
     }
 
+    /**
+     * Return all classrooms.
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function shows()
+    {
+        return Classroom::all();
+    }
+
+    /**
+     * Create a new classroom.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
         $credentials = $request->validate([
@@ -21,8 +42,16 @@ class ClassroomController extends Controller
         $classroom = new Classroom;
         $classroom->name = $credentials['name'];
         $classroom->save();
+
+        return $classroom;
     }
 
+    /**
+     * Update classroom.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function edit(Request $request)
     {
         $credentials = $request->validate([
@@ -35,6 +64,12 @@ class ClassroomController extends Controller
         $classroom->save();
     }
 
+    /**
+     * Delete classroom.
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         $credentials = $request->validate([

@@ -1,16 +1,39 @@
 <script setup>
-import { reactive, onMounted, ref } from "vue";
+import { reactive, onMounted, ref, onBeforeUnmount } from "vue";
 import axios from "axios";
 import { Link } from "@inertiajs/vue3";
 
 const visible = ref(false);
 const user = reactive({});
-
 const currentRoute = window.location.pathname;
+
+const toggleVisible = () => {
+    visible.value = !visible.value;
+};
+
+function handleClickOutside(event) {
+    const button = document.getElementById("user-button");
+    const dropdown = document.getElementById("user-dropdown");
+
+    if (
+        button &&
+        dropdown &&
+        !button.contains(event.target) &&
+        !dropdown.contains(event.target)
+    ) {
+        visible.value = false;
+    }
+}
 
 onMounted(async () => {
     const response = await axios.get("/users/show");
     Object.assign(user, response.data);
+
+    document.addEventListener("click", handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+    document.removeEventListener("click", handleClickOutside);
 });
 </script>
 
@@ -28,11 +51,12 @@ onMounted(async () => {
                 "
             >
                 <slot />
-                <div class="relative">
+                <div class="relative" id="user-dropdown">
                     <button
+                        id="user-button"
                         class="flex items-center justify-center w-10 h-10 text-white bg-blue-500 rounded-full cursor-pointer hover:bg-blue-600"
                         type="button"
-                        @click="visible = !visible"
+                        @click="toggleVisible"
                     >
                         {{ user.name?.charAt(0).toUpperCase() }}
                     </button>
@@ -45,21 +69,6 @@ onMounted(async () => {
                             <ul
                                 class="list-none flex flex-col gap-y-2 text-blue-950 text-sm"
                             >
-                                <li>
-                                    <Link
-                                        class="flex items-center gap-x-2 p-2 rounded-md hover:bg-blue-500 hover:text-white cursor-pointer"
-                                        @click="visible = false"
-                                        :href="
-                                            currentRoute.includes('admin')
-                                                ? '/admin/profile'
-                                                : '/profile'
-                                        "
-                                    >
-                                        <i class="pi pi-user"></i>
-                                        <span>Profile</span>
-                                    </Link>
-                                </li>
-
                                 <li>
                                     <Link
                                         class="flex items-center gap-x-2 p-2 rounded-md hover:bg-blue-500 hover:text-white cursor-pointer"

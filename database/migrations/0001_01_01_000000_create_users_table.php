@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('classrooms_id')->nullable()->constrained('classrooms')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('nisn', 15)->default('');
             $table->string('name', 100);
-            $table->enum('role', ['admin', 'user']);
+            $table->enum('role', ['admin', 'user'])->default('user');
             $table->string('password');
             $table->unique(['nisn', 'name']);
             $table->rememberToken();

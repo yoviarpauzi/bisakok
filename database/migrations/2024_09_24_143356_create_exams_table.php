@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('classrooms_id')->nullable()->constrained('classrooms')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('courses_id')->nullable()->constrained('courses')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('study_period', 10);
-            $table->integer('session')->nullable();
+            $table->integer('session')->default(0);
             $table->enum('type', ['UTS', 'UAS', 'Quiz', 'Entrance']);
-            $table->unique(['classrooms_id', 'courses_id', 'study_period', 'session', 'type']);
+            $table->unique(['classrooms_id', 'courses_id', 'study_period', 'type', 'session']);
             $table->timestamps();
         });
     }

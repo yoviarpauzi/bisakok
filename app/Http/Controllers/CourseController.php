@@ -7,11 +7,32 @@ use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    public function shows()
+    /**
+     * Show a list of all courses.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
     {
         return Course::withCount('exams')->get();
     }
 
+    /**
+     * Retrieve a list of all courses.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function shows()
+    {
+        return Course::all();
+    }
+
+    /**
+     * Create a new course
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
         $credentials = $request->validate([
@@ -23,6 +44,12 @@ class CourseController extends Controller
         $course->save();
     }
 
+    /**
+     * Update a course
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function edit(Request $request)
     {
         $credentials = $request->validate([
@@ -35,6 +62,12 @@ class CourseController extends Controller
         $course->save();
     }
 
+    /**
+     * Delete courses
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         $credentials = $request->validate([

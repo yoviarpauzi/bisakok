@@ -234,7 +234,12 @@ const deleteAdmin = () => {
         <div class="flex flex-col gap-y-3">
             <div class="flex flex-col gap-y-2">
                 <Label for="name">Name</Label>
-                <InputText v-model="addForm.name" autofocus="true" id="name" />
+                <InputText
+                    v-model="addForm.name"
+                    placeholder="John Doe"
+                    autofocus="true"
+                    id="name"
+                />
                 <template v-if="addForm.errors.name">
                     <Message severity="error">
                         {{ addForm.errors.name }}

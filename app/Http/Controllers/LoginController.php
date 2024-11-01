@@ -7,6 +7,14 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+    /**
+     * Handle an authentication attempt.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  array  $credentials
+     * @param  string  $url
+     * @return \Illuminate\Http\Response
+     */
     public function authenticate(Request $request, array $credentials, string $url)
     {
         $remember = $request->boolean('remember');
@@ -20,6 +28,12 @@ class LoginController extends Controller
         return back()->withErrors(['message' => 'Your credentials do not match our records!']);
     }
 
+    /**
+     * Authenticate a user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function authUser(Request $request)
     {
         $credentials = $request->validate([
@@ -27,9 +41,16 @@ class LoginController extends Controller
             'password' => ['required', 'string', 'min:8']
         ]);
 
+        // Attempt to authenticate the user
         return $this->authenticate($request, $credentials, '/dashboard');
     }
 
+    /**
+     * Authenticate an admin user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function authAdmin(Request $request)
     {
         $credentials = $request->validate([

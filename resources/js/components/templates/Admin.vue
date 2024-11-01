@@ -85,7 +85,7 @@ const visible = ref(false);
                 tooltip="Test"
                 :class="{
                     'bg-blue-500 text-white rounded-lg':
-                        $page.url === '/admin/tests',
+                        $page.url.startsWith('/admin/tests'),
                 }"
             >
                 <i class="pi pi-book"></i>

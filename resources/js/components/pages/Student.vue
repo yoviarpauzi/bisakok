@@ -14,27 +14,36 @@ import { FilterMatchMode } from "@primevue/core/api";
 import ToolbarTable from "../molecules/ToolbarTable.vue";
 import { onMounted, ref, watch } from "vue";
 import DialogForm from "../molecules/DialogForm.vue";
+import FormStudent from "../organisms/FormStudent.vue";
 import DialogConfirmation from "../molecules/DialogConfirmation.vue";
 
 const toast = useToast();
 const dt = ref();
 const loading = ref(true);
-const course = ref({});
-const courses = ref([{}, {}, {}, {}, {}]);
-const selectedCourses = ref([]);
-const addCoursesDialog = ref(false);
-const editCoursesDialog = ref(false);
-const deleteCoursesDialog = ref(false);
-const deleteSelectedCoursesDialog = ref(false);
+const student = ref({});
+const classrooms = ref([]);
+const students = ref([{}, {}, {}, {}, {}]);
+const selectedStudents = ref([]);
+const addStudentDialog = ref(false);
+const editStudentDialog = ref(false);
+const deleteStudentDialog = ref(false);
+const deleteSelectedStudentDialog = ref(false);
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
 const getData = async () => {
-    const response = await axios.get("/admin/courses/index").finally(() => {
+    const response = await axios.get("/admin/students/index").finally(() => {
         loading.value = false;
     });
-    courses.value = response.data;
+    students.value = response.data;
+};
+
+const getClassrooms = async () => {
+    const response = await axios.get("/admin/classroom/shows").finally(() => {
+        loading.value = false;
+    });
+    classrooms.value = response.data;
 };
 
 const sendData = (form, url, dialog, message) => {
@@ -67,79 +76,115 @@ const sendData = (form, url, dialog, message) => {
 
 onMounted(async () => {
     await getData();
+    await getClassrooms();
 });
 
-const exportCSV = () => {
-    dt.value.exportCSV();
-};
-
 const addForm = useForm({
+    nisn: "",
     name: "",
+    classrooms_id: "",
+    password: "",
+    password_confirmation: "",
 });
 
 const updateForm = useForm({
     id: 0,
     name: "",
+    nisn: "",
+    name: "",
+    classrooms_id: "",
+    password: "",
+    password_confirmation: "",
 });
 
 const deleteForm = useForm({
     ids: [],
 });
 
-watch(addCoursesDialog, (value) => {
+const uploadForm = useForm({
+    file: null,
+});
+
+watch(addStudentDialog, (value) => {
     if (value === true) {
         addForm.reset();
         addForm.clearErrors();
     }
 });
 
-const addCourses = () => {
+const exportCSV = () => {
+    dt.value.exportCSV();
+};
+
+const addStudent = () => {
     sendData(
         addForm,
-        "/admin/courses/store",
-        addCoursesDialog,
-        "Success add course"
+        "/admin/students/store",
+        addStudentDialog,
+        "Success add student"
+    );
+};
+
+const deleteSelectedStudent = async () => {
+    deleteForm.ids = selectedStudents.value.map((item) => item.id);
+    sendData(
+        deleteForm,
+        "/admin/students/delete",
+        deleteSelectedStudentDialog,
+        "Success delete selected classroom"
     );
 };
 
 const toggleEditDialog = (data) => {
     updateForm.id = data.id;
+    updateForm.nisn = data.nisn;
     updateForm.name = data.name;
-    editCoursesDialog.value = true;
+    updateForm.classrooms_id = data.classrooms_id;
+    editStudentDialog.value = true;
 };
 
-const editCourses = () => {
+const editSudent = () => {
     sendData(
         updateForm,
-        "/admin/courses/edit",
-        editCoursesDialog,
-        "Success update course"
-    );
-};
-
-const deleteSelectedCourses = async () => {
-    deleteForm.ids = selectedCourses.value.map((item) => item.id);
-    sendData(
-        deleteForm,
-        "/admin/courses/delete",
-        deleteSelectedCoursesDialog,
-        "Success delete selected classroom"
+        "/admin/students/edit",
+        editStudentDialog,
+        "Success update student"
     );
 };
 
 const toggleDeleteDialog = (data) => {
-    course.value = data;
-    deleteForm.ids.push(course.value.id);
-    deleteCoursesDialog.value = true;
+    student.value = data;
+    deleteForm.ids.push(student.value.id);
+    deleteStudentDialog.value = true;
 };
 
-const deleteCourses = () => {
+const deleteStudent = () => {
     sendData(
         deleteForm,
-        "/admin/courses/delete",
-        deleteCoursesDialog,
-        "Success delete course"
+        "/admin/students/delete",
+        deleteStudentDialog,
+        "Success delete student"
     );
+};
+
+const handleUpload = (event) => {
+    uploadForm.file = event.files[0];
+    loading.value = true;
+    uploadForm.post("/admin/students/uploadFile", {
+        onSuccess: async () => {
+            await getData();
+            toast.add({
+                severity: "success",
+                summary: "Success",
+                detail: "Success upload file",
+                life: 3000,
+            });
+        },
+    });
+};
+
+const downloadExample = () => {
+    window.location.href = "/admin/students/example";
 };
 </script>
 
@@ -147,22 +192,43 @@ const deleteCourses = () => {
     <Toast></Toast>
 
     <div class="flex items-center gap-x-2 text-2xl font-medium text-blue-950">
-        <i class="pi pi-book"></i>
-        <h5>Courses</h5>
+        <i class="pi pi-user"></i>
+        <h5>Students</h5>
     </div>
 
     <div class="card text-blue-950">
         <ToolbarTable
-            v-model:selectedItems="selectedCourses"
-            v-model:addItemDialog="addCoursesDialog"
-            v-model:deleteSelectedItemDialog="deleteSelectedCoursesDialog"
+            v-model:selectedItems="selectedStudents"
+            v-model:addItemDialog="addStudentDialog"
+            v-model:deleteSelectedItemDialog="deleteSelectedStudentDialog"
             :exportCSV="exportCSV"
-        ></ToolbarTable>
+        >
+            <div class="flex gap-x-2">
+                <Button
+                    label="Example"
+                    icon="pi pi-download"
+                    severity="info"
+                    @click="downloadExample"
+                />
+                <FileUpload
+                    mode="basic"
+                    accept="text/csv"
+                    :maxFileSize="1000000"
+                    label="Import"
+                    customUpload
+                    chooseLabel="Import"
+                    class="mr-2"
+                    auto
+                    :chooseButtonProps="{ severity: 'contrast' }"
+                    @uploader="handleUpload($event)"
+                />
+            </div>
+        </ToolbarTable>
 
         <DataTable
             ref="dt"
-            v-model:selection="selectedCourses"
-            :value="courses"
+            v-model:selection="selectedStudents"
+            :value="students"
             dataKey="id"
             :paginator="true"
             :rows="5"
@@ -171,7 +237,7 @@ const deleteCourses = () => {
         >
             <template #header>
                 <div class="flex flex-wrap gap-2 items-center justify-between">
-                    <h4 class="m-0 text-xl font-medium">Manage Courses</h4>
+                    <h4 class="m-0 text-xl font-medium">Manage Students</h4>
                     <IconField>
                         <InputIcon>
                             <i class="pi pi-search" />
@@ -195,6 +261,17 @@ const deleteCourses = () => {
             </Column>
 
             <Column
+                field="nisn"
+                header="NISN"
+                sortable
+                style="min-width: 12rem"
+            >
+                <template v-if="loading" #body>
+                    <Skeleton></Skeleton>
+                </template>
+            </Column>
+
+            <Column
                 field="name"
                 header="Name"
                 sortable
@@ -206,8 +283,8 @@ const deleteCourses = () => {
             </Column>
 
             <Column
-                field="exams_count"
-                header="Number of exams"
+                field="classroom.name"
+                header="Classroom"
                 sortable
                 style="min-width: 12rem"
             >
@@ -241,27 +318,19 @@ const deleteCourses = () => {
         </DataTable>
     </div>
 
-    <!-- Add Courses Dialog -->
+    <!-- Add Student Dialog -->
     <DialogForm
-        v-model="addCoursesDialog"
-        header="Add Course"
-        :confirm="addCourses"
+        v-model="addStudentDialog"
+        header="Add Student"
+        :confirm="addStudent"
     >
-        <div class="flex flex-col gap-y-2">
-            <label for="name">Name</label>
-            <InputText v-model="addForm.name" autofocus="true" />
-            <template v-if="addForm.errors.name">
-                <Message severity="error">
-                    {{ addForm.errors.name }}
-                </Message>
-            </template>
-        </div>
+        <FormStudent v-model:form="addForm" v-model:classrooms="classrooms" />
     </DialogForm>
 
-    <!-- Delete Selected Courses Dialog -->
+    <!-- Delete Selected Students Dialog -->
     <DialogConfirmation
-        v-model="deleteSelectedCoursesDialog"
-        :confirm="deleteSelectedCourses"
+        v-model="deleteSelectedStudentDialog"
+        :confirm="deleteSelectedStudent"
     >
         <div class="flex items-center gap-4">
             <i class="pi pi-exclamation-triangle !text-3xl" />
@@ -269,30 +338,25 @@ const deleteCourses = () => {
         </div>
     </DialogConfirmation>
 
-    <!-- Edit Course Dialog -->
+    <!-- Edit Student Dialog -->
     <DialogForm
-        v-model="editCoursesDialog"
-        header="Update Course"
-        :confirm="editCourses"
+        v-model="editStudentDialog"
+        header="Edit Student"
+        :confirm="editSudent"
     >
-        <div class="flex flex-col gap-y-2">
-            <label for="name">Name</label>
-            <InputText v-model="updateForm.name" autofocus="true" />
-            <template v-if="updateForm.errors.name">
-                <Message severity="error">
-                    {{ updateForm.errors.name }}
-                </Message>
-            </template>
-        </div>
+        <FormStudent
+            v-model:form="updateForm"
+            v-model:classrooms="classrooms"
+        />
     </DialogForm>
 
-    <!-- Delete Courses Dialog -->
-    <DialogConfirmation v-model="deleteCoursesDialog" :confirm="deleteCourses">
+    <!-- Delete Student Dialog -->
+    <DialogConfirmation v-model="deleteStudentDialog" :confirm="deleteStudent">
         <div class="flex items-center gap-4">
             <i class="pi pi-exclamation-triangle !text-3xl" />
             <span
                 >Are you sure you want to delete courses
-                {{ course.name }}?</span
+                {{ student.name }}?</span
             >
         </div>
     </DialogConfirmation>

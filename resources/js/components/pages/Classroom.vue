@@ -31,7 +31,7 @@ const filters = ref({
 });
 
 const getData = async () => {
-    const response = await axios.get("/admin/classroom/shows").finally(() => {
+    const response = await axios.get("/admin/classroom/index").finally(() => {
         loading.value = false;
     });
     classrooms.value = response.data;
